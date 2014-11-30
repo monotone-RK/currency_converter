@@ -23,21 +23,27 @@ def currencyConverter(FROM, TO, VALUE):
     if FROM == "ALL":
         err_message = 'ERROR!\n"ALL" is not available as curcode_from.\nIf curcode_to, "ALL" can be used.'
         sys.exit(err_message)
+    elif (FROM not in dic) or ((TO not in dic) and (TO != "ALL")):
+        err_message = "ERROR!\nThis currency code(%s) is not supported.\nThis currency code(%s) is not supported." % (FROM, TO)
+        if not ((TO not in dic) and (TO != "ALL")):
+            err_message = "ERROR!\nThis currency code(%s) is not supported." % FROM
+        elif not (FROM not in dic):
+            err_message = "ERROR!\nThis currency code(%s) is not supported." % TO
+        sys.exit(err_message)
     elif FROM == TO:
         err_message = "ERROR!\ncurcode_from and curcode_to are same."
         sys.exit(err_message)
     elif not VALUE.replace(",", "").isdigit():
         err_message = "ERROR!\n%s is invalid value." % VALUE
         sys.exit(err_message)
-    else:
-        for curcode in [FROM, TO]:
-            if (curcode not in dic) and (TO != "ALL"):
-                err_message = "ERROR!\nThis currency code(%s) is not supported." % curcode
-                sys.exit(err_message)
 
-    VALUE = VALUE.replace(",", "")
-    locale.setlocale(locale.LC_MONETARY, dic[FROM])
-    print "Currency I Have: %s %s" % (locale.currency(int(VALUE), True, True), FROM)
+    if FROM == "EUR":
+        print "Currency I Have: %s%s %s" % (dic[FROM], VALUE, FROM)
+        VALUE = VALUE.replace(",", "")
+    else:
+        VALUE = VALUE.replace(",", "")
+        locale.setlocale(locale.LC_MONETARY, dic[FROM])
+        print "Currency I Have: %s %s" % (locale.currency(int(VALUE), True, True), FROM)
 
     if TO == "ALL":
         for key in dic.keys():
@@ -63,7 +69,7 @@ def showAmmount(From, To, Value, LCID):
 #******************************************************************************/
 argparser = argparse.ArgumentParser(description="Example: python curconv.py JPY USD 30,000")
 argparser.add_argument("-v", "--version", action="version",
-                       version="Currency Converter Written in Python v1.0 last upated:2014.05.10")
+                       version="Currency Converter Written in Python v1.1 last upated:2014.11.30")
 argparser.add_argument("curcode_from", metavar="currency_code_from",
                        help="currency code(src)")
 argparser.add_argument("curcode_to", metavar="currency_code_to",
